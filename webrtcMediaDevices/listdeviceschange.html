@@ -1,0 +1,46 @@
+<html>
+<head><title>Local video playback</title></head>
+<body>
+  <!--   <video id="localVideo" autoplay playsinline controls="false"/> -->
+    <h2>List of connected video devices</h2>
+    <select id="availableCameras">
+    	
+    </select>
+<script type="text/javascript">
+	// Updates the select element with the provided set of cameras
+function updateCameraList(cameras) {
+	
+    const listElement = document.querySelector('select#availableCameras');
+    listElement.innerHTML = '';
+    var cams = cameras.map(camera => {
+        const cameraOption = document.createElement('option');
+        cameraOption.label = camera.groupId;
+        cameraOption.value = camera.kind;
+        listElement.add(cameraOption);
+    });
+    //cams.forEach(cameraOption => listElement.add(cameraOption));
+}
+
+// Fetch an array of devices of a certain type
+async function getConnectedDevices(type) {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    return devices.filter(device => device.kind === type)
+}
+
+// Get the initial set of cameras connected
+getConnectedDevices('videoinput').then(function(videoCameras){
+	updateCameraList(videoCameras);
+})
+
+
+
+// Listen for changes to media devices and update the list accordingly
+navigator.mediaDevices.addEventListener('devicechange', event => {
+    const newCameraList = getConnectedDevices('video');
+    updateCameraList(newCameraList);
+});
+</script>
+</body>
+</html>
+
+
